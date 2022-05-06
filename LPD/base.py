@@ -1,25 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
-#類似度計算の時に対数を用いて計算する
+
 
 import numpy as np
 from scipy.linalg import eigh
-
-
-def get_log_sum(X, i):
-    _, s, _ = np.linalg.svd(X)
-    s = np.array(s)
-    tmp = 1 - (s**2)
-    a = (np.log(tmp)/np.log(0.1)).sum()
-    # if i == 0:
-    #     print(s)
-    # log_s = np.log(s)
-    # if i == 0:
-    #     print(log_s)
-    # a = log_s.sum()
-    # if i == 0:
-    #     print(a)
-    return a
 
 
 def mean_square_singular_values(X):
@@ -296,3 +280,4 @@ def cross_similarities(refs, inputs):
     similarities = np.array(similarities)
 
     return similarities
+

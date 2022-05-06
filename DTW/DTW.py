@@ -1,3 +1,5 @@
+#DTWを説明するために簡単なグラフをプロット
+
 #%%
 import matplotlib.gridspec as gridspec
 import numpy as np

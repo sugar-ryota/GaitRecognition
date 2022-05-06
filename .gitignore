@@ -1,0 +1,17 @@
+data
+
+LPD/OULP-C1V2_Pack
+LPD/CNNfeature
+LPD/path
+
+plot
+
+gei
+cnnfeature
+
+.vscode
+__pycache__
+path
+
+results
+accuracy
