@@ -40,7 +40,7 @@ ax.plot(freq, label='frequency')  # frequencyは周波数
 # ax.set_xlim(0, 0.1)
 ax.legend()
 ax.set_xlabel("Number of data")
-ax.set_ylabel("freqency")
+ax.set_ylabel("frequency")
 ax.grid()
 plt.show()
 

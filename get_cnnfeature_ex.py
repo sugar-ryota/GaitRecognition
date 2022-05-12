@@ -5,16 +5,9 @@
 # !pip install keras
 
 # %%
-
-import csv
-
 import os
 
 import numpy as np
-
-import tensorflow as tf
-
-import keras
 
 import copy
 
@@ -22,47 +15,30 @@ import glob
 
 import openpyxl as excel
 
-from skimage import data
-
 from PIL import Image
 
-from keras.preprocessing.image import array_to_img
 
 from keras.utils.np_utils import to_categorical
 
+import gc
 
 from collections import OrderedDict
 
-from pathlib import Path
-
-from tqdm import tqdm
-
 from natsort import natsorted
-
-import pickle
 
 
 from keras.models import Sequential
 
-from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, BatchNormalization
-
-from keras.utils import np_utils
-
-# from sklearn.datasets import fetch_mldata
-
-import matplotlib
-
-import matplotlib.pyplot as plt
+from keras.layers import Dense,Flatten, Conv2D, MaxPooling2D, BatchNormalization
 
 from keras.models import Model
 
-from keras.models import model_from_json
-
 from keras.models import load_model
 
-from tensorflow.keras.optimizers import RMSprop
 
 
+import os
+os.environ['TF_GPU_ALLOCATOR'] = 'cuda_malloc_async'
 # %%
 
 #データセットを読み込んで学習データと訓練データに分ける
@@ -90,10 +66,6 @@ gydata = copy.deepcopy(dict)
 pxdata = copy.deepcopy(dict)
 pydata = copy.deepcopy(dict)
 
-# for i in range(3):
-#     pxdata.append(copy.deepcopy(dict))
-#     pydata.append(copy.deepcopy(dict))
-
 # naturalsort #["00001","00002"....]
 sblist = natsorted(glob.glob("data/TreadmillDatasetA/*"))
 for sbi, sb in enumerate(sblist):  # index object
@@ -120,15 +92,13 @@ for sbi, sb in enumerate(sblist):  # index object
         for pic in piclist:
             tmp = np.array(Image.open(pic)).reshape(128, 88, 1)
             tmp = tmp/255
-            # if(pici < len(piclist) / 3):
-            #     i = 0
-            # elif(pici < len(piclist) / 3*2):
-            #     i = 1
-            # else:
-            #     i = 2
             pxdata[key].append(tmp)
             pydata[key].append(sbi)  # label
 
+del sblist
+gc.collect()
+del piclist
+gc.collect()
 # %%
 glabel = copy.deepcopy(gydata)
 plabel = copy.deepcopy(pydata)
@@ -214,11 +184,12 @@ for tri, trkm in enumerate(gxdata.keys()):
     exmodel = load_model('path/to/model_ex.h5')
     # verboseはログの出力の指定(2ならepochごとに1行のログを出力)
     exmodel.fit(gxdata[trkm], gydata[trkm],
-                epochs=epoch, batch_size=10, verbose=2)
+                epochs=epoch, batch_size=5, verbose=2)
     outmodel = Model(inputs=exmodel.input, outputs=exmodel.layers[len(
         exmodel.layers)-2].output)  # fc層からのCNN特徴取り出しのモデル
-    feature = outmodel.predict(gxdata[trkm], batch_size=10, verbose=0)
+    feature = outmodel.predict(gxdata[trkm], batch_size=5, verbose=0)
 
+    print('come')
     if not os.path.exists('./cnnfeature/silhouette/cnnmodel/'+trkm):
         os.mkdir('./cnnfeature/silhouette/cnnmodel/'+trkm)  # 保存先のディレクトリ作成
     wb = excel.Workbook()
@@ -230,21 +201,19 @@ for tri, trkm in enumerate(gxdata.keys()):
         f'./cnnfeature/silhouette/cnnmodel/tr{trkm}_ex.json', "w").write(exmodel.to_json())
     exmodel.save_weights(
         f'./cnnfeature/silhouette/cnnmodel/tr{trkm}_ex.h5')  # 重み保存
-
+    del feature
+    gc.collect()
     for tsi, tskm in enumerate(pxdata.keys()):
         feature = outmodel.predict(
-            pxdata[tskm], batch_size=10, verbose=0)
+            pxdata[tskm], batch_size=5, verbose=0)
         wb = excel.Workbook()
         wb.save(
             f'./cnnfeature/silhouette/cnnmodel/{trkm}/ts{tskm}.csv')
-            # probe特徴量保存 3つに分けたうちの1つずつ
         np.savetxt(
             f'./cnnfeature/silhouette/cnnmodel/{trkm}/ts{tskm}.csv', feature.T, delimiter=',')
         sxres = smax(exmodel, pxdata[tskm], plabel[tskm], sub_num)
         result[tri][tsi] += sxres
     print(result[tri])
-# result /= (n+1)  # 3つの平均を取るために3で割る
 wb = excel.Workbook()
 wb.save(f'./results/silhouette/softmax_ex.csv')
 np.savetxt(f'./results/silhouette/softmax_ex.csv', result, delimiter=',')
-
