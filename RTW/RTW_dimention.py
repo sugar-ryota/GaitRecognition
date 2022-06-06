@@ -5,6 +5,7 @@ import csv
 import pandas as pd
 import pickle
 import random
+from sklearn.metrics import roc_auc_score
 
 from base.base_class import ConstrainedSMBase, MSMInterface
 from base.base import subspace_bases, mean_square_singular_values
@@ -55,12 +56,12 @@ sample_num = 5  # ランダムサンプリングする数
 # galleryの特徴量に関して、それぞれの被験者ごとに配列に分ける
 gallery_list = []
 num = 0
-df = pd.read_csv("./cnnfeature/silhouette/cnnmodel/2km/tr.csv", header=None)
+df = pd.read_csv("./cnnfeature/silhouette/cnnmodel/7km/tr.csv", header=None)
 df_array = np.array(df)
 print(df_array.shape)
 add = int(df_array.shape[1]/sub_num)
 for i in range(sub_num):
-    df = pd.read_csv("./cnnfeature/silhouette/cnnmodel/2km/tr.csv",
+    df = pd.read_csv("./cnnfeature/silhouette/cnnmodel/7km/tr.csv",
                      header=None, usecols=[x for x in range(num, num+add)])
     gallery_list.append(df)
     num += add
@@ -95,12 +96,12 @@ for p_num in range(1, 4):
     probe_list = []
     num = 0
     df = pd.read_csv(
-        f"./cnnfeature/silhouette/cnnmodel/2km/ts2km_{p_num}.csv", header=None)
+        f"./cnnfeature/silhouette/cnnmodel/7km/ts9km_{p_num}.csv", header=None)
     df_array = np.array(df)
     add = int(df_array.shape[1]/sub_num)
     for i in range(sub_num):
         df = pd.read_csv(
-            f"./cnnfeature/silhouette/cnnmodel/2km/ts2km_{p_num}.csv", header=None, usecols=[x for x in range(num, num+add)])
+            f"./cnnfeature/silhouette/cnnmodel/7km/ts9km_{p_num}.csv", header=None, usecols=[x for x in range(num, num+add)])
         probe_list.append(df)
         num += add
     probe_array = np.array(probe_list)
@@ -126,7 +127,10 @@ for p_num in range(1, 4):
     pred = model.predict(pr_TE_feature_trans)
     print(f"pred: {pred}\n true: {y}\n")
     accuracy = (pred == y).mean()
+    error = 1 - accuracy
     print(f"accuracy:{accuracy}")
+    print(f"err: {error}")
+    print(f"auc_score: {roc_auc_score(y, pred,multi_class='ovr')}")
     sum_acc += accuracy
     acc = sum_acc/p_num
     print(f"total_accuracy:{acc}")

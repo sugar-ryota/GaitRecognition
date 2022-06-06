@@ -70,7 +70,7 @@ def predict(gallery, probe):
     gallery_array = np.array(gallery_list)
     gallery_trans = gallery_array.transpose(0, 2, 1)
 
-    save_path = "./accuracy/accuracy_cmsm_ex.txt"
+    save_path = "./accuracy/accuracy_cmsm_ex_all.txt"
 
     with open(save_path, mode='a') as file:
         file.write("\n")

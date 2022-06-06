@@ -56,11 +56,11 @@ m = 100  # サンプル間隔
 # galleryの特徴量に関して、それぞれの被験者ごとに配列に分ける
 gallery_list = []
 num = 0
-df = pd.read_csv("./cnnfeature/silhouette/cnnmodel/2km/tr_ex.csv", header=None)
+df = pd.read_csv("./cnnfeature/silhouette/cnnmodel/10km/tr_ex.csv", header=None)
 df_array = np.array(df)
 add = int(df_array.shape[1]/sub_num)
 for i in range(sub_num):
-    df = pd.read_csv("./cnnfeature/silhouette/cnnmodel/2km/tr_ex.csv",
+    df = pd.read_csv("./cnnfeature/silhouette/cnnmodel/10km/tr_ex.csv",
                      header=None, usecols=[x for x in range(num, num+add)])
     gallery_list.append(df)
     num += add
@@ -109,12 +109,12 @@ sumacc = 0
 probe_list = []
 num = 0
 df = pd.read_csv(
-    f"./cnnfeature/silhouette/cnnmodel/2km/ts2km.csv", header=None)
+    f"./cnnfeature/silhouette/cnnmodel/10km/ts8km.csv", header=None)
 df_array = np.array(df)
 add = int(df_array.shape[1]/sub_num)
 for i in range(sub_num):
     df = pd.read_csv(
-        f"./cnnfeature/silhouette/cnnmodel/2km/ts2km.csv", header=None, usecols=[x for x in range(num, num+add)])
+        f"./cnnfeature/silhouette/cnnmodel/10km/ts8km.csv", header=None, usecols=[x for x in range(num, num+add)])
     probe_list.append(df)
     num += add
 probe_array = np.array(probe_list)

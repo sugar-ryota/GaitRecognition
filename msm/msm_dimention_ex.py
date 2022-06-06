@@ -1,23 +1,29 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-
 # %%
 
 
 import numpy as np
+import csv
 import pandas as pd
+import pickle
 
-from base.base_class import ConstrainedSMBase, MSMInterface
+from base.base_class import ConstrainedSMBase, MSMInterface, SMBase
 from base.base import subspace_bases, mean_square_singular_values
 
 
 # %%
 
 
-class ConstrainedMSM(MSMInterface, ConstrainedSMBase):
+"""
+Mutual Subspace Method
+"""
+
+
+class MutualSubspaceMethod(MSMInterface, SMBase):
     """
-    Constrained Mutual Subspace Method
+    Mutual Subspace Method
     """
 
     def _get_gramians(self, X):
@@ -32,17 +38,18 @@ class ConstrainedMSM(MSMInterface, ConstrainedSMBase):
         """
 
         # bases, (n_dims, n_subdims)
-        bases = subspace_bases(X, self.n_subdims)
-        # bases, (n_gds_dims, n_subdims)
-        bases = self._gds_projection(bases)
+        bases = subspace_bases(X, self.test_n_subdims)
 
-        # gramians, (n_classes, n_subdims, n_subdims)
-        gramians = np.dot(self.dic.transpose(0, 2, 1), bases)
+        # grammians, (n_classes, n_subdims, n_subdims or greater)
+        dic = self.dic[:, :, :self.n_subdims]
+        gramians = np.dot(dic.transpose(0, 2, 1), bases)
 
         return gramians
 
 
 # %%
+
+
 sub_num = 34
 y = []
 for i in range(sub_num):
@@ -50,15 +57,18 @@ for i in range(sub_num):
 
 
 # %%
+train_km = 2
+test_km = 2
 
 # galleryの特徴量に関して、それぞれの被験者ごとに配列に分ける
 gallery_list = []
 num = 0
-df = pd.read_csv("./cnnfeature/silhouette/cnnmodel/10km/tr_ex.csv", header=None)
+df = pd.read_csv(
+    f"./cnnfeature/silhouette/cnnmodel/{train_km}km/tr_ex.csv", header=None)
 df_array = np.array(df)
 add = int(df_array.shape[1]/sub_num)
 for i in range(sub_num):
-    df = pd.read_csv("./cnnfeature/silhouette/cnnmodel/10km/tr_ex.csv",
+    df = pd.read_csv(f"./cnnfeature/silhouette/cnnmodel/{train_km}km/tr_ex.csv",
                      header=None, usecols=[x for x in range(num, num+add)])
     gallery_list.append(df)
     num += add
@@ -67,23 +77,26 @@ gallery_trans = gallery_array.transpose(0, 2, 1)
 
 
 # %%
+
+
 # probeの特徴に関して、それぞれの被験者ごとに配列に分ける
+sum_acc = 0
 probe_list = []
 num = 0
 df = pd.read_csv(
-    f"./cnnfeature/silhouette/cnnmodel/10km/ts8km.csv", header=None)
+    f"./cnnfeature/silhouette/cnnmodel/{train_km}km/ts{test_km}km.csv", header=None)
 df_array = np.array(df)
 add = int(df_array.shape[1]/sub_num)
 for i in range(sub_num):
     df = pd.read_csv(
-        f"./cnnfeature/silhouette/cnnmodel/10km/ts8km.csv", header=None, usecols=[x for x in range(num, num+add)])
+        f"./cnnfeature/silhouette/cnnmodel/{train_km}km/ts{test_km}km.csv", header=None, usecols=[x for x in range(num, num+add)])
     probe_list.append(df)
     num += add
 probe_array = np.array(probe_list)
 probe_trans = probe_array.transpose(0, 2, 1)
-model = ConstrainedMSM(n_subdims=10, n_gds_dims=240)
+model = MutualSubspaceMethod(n_subdims=20)
 model.fit(gallery_trans, y)
-model.n_subdims = 15
+model.n_subdims = 10
 pred = model.predict(probe_trans)
 print(f"pred: {pred}\n true: {y}\n")
 accuracy = (pred == y).mean()
