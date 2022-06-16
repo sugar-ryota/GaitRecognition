@@ -1,5 +1,5 @@
-#目視で周期をきめつつ、ランダムサンプリングをする際に制限をつける
-#具体的には1周期の中で、最初と最後の部分は必ず取得するようにしてみる
+# 目視で周期をきめつつ、ランダムサンプリングをする際に制限をつける
+# 具体的には1周期の中で、最初と最後の部分は必ず取得するようにしてみる
 
 # %%
 
@@ -50,13 +50,11 @@ for i in range(sub_num):
 # 目視で判断した1周期分のフレーム数
 mokushi_num = {"2km": 49, "3km": 41, "4km": 38, "5km": 36,
                "6km": 33, "7km": 28, "8km": 27, "9km": 22, "10km": 21}
-TE_num = 120  # 変数R(TE特徴の数)
-sample_num = 15  # ランダムサンプリングする数
 
 # %%
 
 
-def predict(gallery, probe):
+def limited_predict(gallery, probe, TE_num, sample_num):
     gallery_list = []
     num = 0
     df = pd.read_csv(
@@ -81,15 +79,16 @@ def predict(gallery, probe):
         end = extract_num_train
         for j in range(repetition_num):
             for l in range(int(TE_num/repetition_num)):
-                #ランダムサンプリングに制限をつける
+                # ランダムサンプリングに制限をつける
                 cnnfeature = []
-                cnnfeature.extend(gallery_array[i][:,start])
-                rand = [random.randint(start+1, end-1) for k in range(sample_num-2)]
+                # cnnfeature.extend(gallery_array[i][:, start])
+                rand = [random.randint(start+2, end-2)
+                        for k in range(sample_num)]
                 rand.sort()
                 for k in rand:
                     x = gallery_array[i][:, k-1]
                     cnnfeature.extend(x)
-                cnnfeature.extend(gallery_array[i][:,end])
+                # cnnfeature.extend(gallery_array[i][:, end])
                 TE_feature.append(cnnfeature)
             start = end
             end += extract_num_train
@@ -98,13 +97,6 @@ def predict(gallery, probe):
     ga_TE_feature = np.array(ga_TE_feature)
     ga_TE_feature_trans = ga_TE_feature.transpose(0, 2, 1)
 
-    save_path = "./accuracy/RTW_limited_randomsampling1.txt"
-
-    with open(save_path, mode='a') as file:
-        file.write("\n")
-        file.write("\n")
-        file.write(f"gallery:{gallery}km probe:{probe}km")
-        file.write("\n")
     # %%
     n_subdims = 25
     gds_subdims = 350
@@ -131,13 +123,14 @@ def predict(gallery, probe):
         for j in range(repetition_num):
             for l in range(int(TE_num/repetition_num)):
                 cnnfeature = []
-                cnnfeature.extend(probe_array[i][:,start])
-                rand = [random.randint(start+1, end-1) for k in range(sample_num-2)]
+                # cnnfeature.extend(probe_array[i][:, start])
+                rand = [random.randint(start+2, end-2)
+                        for k in range(sample_num)]
                 rand.sort()
                 for k in rand:
                     x = probe_array[i][:, k-1]
                     cnnfeature.extend(x)
-                cnnfeature.extend(probe_array[i][:,end])
+                # cnnfeature.extend(probe_array[i][:, end])
                 TE_feature.append(cnnfeature)
             start = end
             end += extract_num_test
@@ -149,9 +142,6 @@ def predict(gallery, probe):
     model.fit(ga_TE_feature_trans, y)
     model.n_subdims = 35
     pred = model.predict(pr_TE_feature_trans)
-    print(f"pred: {pred}\n true: {y}\n")
     accuracy = (pred == y).mean()
-    print(f"accuracy:{accuracy}")
-    with open(save_path, mode='a') as file:
-        file.write(f"accuracy:{accuracy}")
-        file.write("\n")
+    print(f"limited_accuracy:{accuracy}")
+    return accuracy

@@ -64,6 +64,7 @@ for i in range(sub_num):
     num += add
 gallery_array = np.array(gallery_list)
 gallery_trans = gallery_array.transpose(0, 2, 1)
+print(f'shape = {gallery_trans.shape}')
 
 
 # %%
