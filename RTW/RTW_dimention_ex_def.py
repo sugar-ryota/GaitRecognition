@@ -94,7 +94,7 @@ def predict(gallery, probe):
     # %%
     # total_TE_feature = np.array(total_TE_feature)
     # print(total_TE_feature.shape)
-    save_path = "./accuracy/RTW_log_ex.txt"
+    save_path = "./accuracy/RTW__log_ex.txt"
 
     with open(save_path, mode='a') as file:
         file.write("\n")

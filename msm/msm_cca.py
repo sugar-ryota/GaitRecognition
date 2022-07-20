@@ -7,8 +7,8 @@
 import numpy as np
 import pandas as pd
 
-from base.base_class import MSMInterface, SMBase
-from base.base import subspace_bases
+from base.base_class_cca import MSMInterface, SMBase
+from base.base_cca import subspace_bases
 
 
 # %%
@@ -40,6 +40,8 @@ class MutualSubspaceMethod(MSMInterface, SMBase):
 
         # grammians, (n_classes, n_subdims, n_subdims or greater)
         dic = self.dic[:, :, :self.n_subdims]
+        #それぞれの辞書部分空間と入力部分空間との行列を求めている->特異値問題へ
+        #ある辞書部分空間:A,入力部分空間:Bとすると行列=A^T@B
         gramians = np.dot(dic.transpose(0, 2, 1), bases)
 
         return gramians

@@ -128,47 +128,70 @@ for km in pxdata.keys():  # ["2km","3km",....]
   pydata[km] = np.array(pydata[km])
   pydata[km] = to_categorical(pydata[km])
 
+# 目視で判断した1周期分のフレーム数
+mokushi_num = {"2km": 49, "3km": 41, "4km": 38, "5km": 36,
+               "6km": 33, "7km": 28, "8km": 27, "9km": 22, "10km": 21}
 
 def RTW_predict(gallery,probe,TE_num,sample_num):
 
     # galleryの特徴量に関して、それぞれの被験者ごとに配列に分ける
     gallery_list = []
     num = 0
+    gallery = str(gallery)+'km'
+
+    repetition_num = 8
+    # 目視で判断した1周期分だけ取り出す
+    extract_num_train = mokushi_num[gallery]
     df_array = gxdata[gallery]
     add = int(df_array.shape[0]/sub_num)
+    start = 0
+    end = extract_num_train
     for i in range(sub_num):
         TE_feature= []
-        for j in range(TE_num):
-            rand = [random.randint(0, add) for k in range(sample_num)]
-            rand.sort()
-            feature = []
-            for k in rand:
-                x = df_array[k]
-                feature.extend(x)
-            TE_feature.append(feature)
-        TE_feature = np.array(TE_feature)
+        for j in range(repetition_num):
+            for l in range(int(TE_num/repetition_num)):
+                rand = [random.randint(start+2, end-2-1) for k in range(sample_num)]
+                rand.sort()
+                feature = []
+                for k in rand:
+                    x = df_array[k]
+                    feature.extend(x)
+                TE_feature.append(feature)
+            start = end
+            end += extract_num_train
         gallery_list.append(TE_feature)
         num += add
+        start = num
+        end = num + extract_num_train
     gallery_array = np.array(gallery_list)
 
     probe_list = []
     num = 0
+    probe = str(probe)+'km'
+
+    extract_num_test = mokushi_num[probe]
     df_array = pxdata[probe]
     add = int(df_array.shape[0]/sub_num)
+    start = 0
+    end = extract_num_test
     for i in range(sub_num):
         TE_feature = []
-        for j in range(TE_num):
-            rand = [random.randint(0, add) for k in range(sample_num)]
-            rand.sort()
-            feature = []
-            for k in rand:
-                x = df_array[k]
-                feature.extend(x)
-            TE_feature.append(feature)
+        for j in range(repetition_num):
+            for l in range(int(TE_num/repetition_num)):
+                rand = [random.randint(start+2, end-2-1) for k in range(sample_num)]
+                rand.sort()
+                feature = []
+                for k in rand:
+                    x = df_array[k]
+                    feature.extend(x)
+                TE_feature.append(feature)
+            start = end
+            end += extract_num_test
         probe_list.append(TE_feature)
         num += add
+        start = num
+        end = num + extract_num_test
     probe_array = np.array(probe_list)
-
     model = ConstrainedMSM(n_subdims=10, n_gds_dims=240)
     model.fit(gallery_array, y)
     model.n_subdims = 15
@@ -176,3 +199,5 @@ def RTW_predict(gallery,probe,TE_num,sample_num):
     print(f"pred: {pred}\n true: {y}\n")
     accuracy = (pred == y).mean()
     print(f"accuracy:{accuracy}")
+    return accuracy
+# %%

@@ -2,26 +2,26 @@
 # coding: utf-8
 
 # %%
-import os
 import numpy as np
 import copy
 import glob
 from PIL import Image
 from keras.utils.np_utils import to_categorical
-import gc
 from collections import OrderedDict
 from natsort import natsorted
-from base.base_class import ConstrainedSMBase, MSMInterface
-from base.base import subspace_bases
+from base.base_class_cca import MSMInterface,SMBase
+from base.base_cca import subspace_bases
 
 
 
-import os
-os.environ['TF_GPU_ALLOCATOR'] = 'cuda_malloc_async'
+"""
+Mutual Subspace Method
+"""
 
-class ConstrainedMSM(MSMInterface, ConstrainedSMBase):
+
+class MutualSubspaceMethod(MSMInterface, SMBase):
     """
-    Constrained Mutual Subspace Method
+    Mutual Subspace Method
     """
 
     def _get_gramians(self, X):
@@ -36,15 +36,17 @@ class ConstrainedMSM(MSMInterface, ConstrainedSMBase):
         """
 
         # bases, (n_dims, n_subdims)
-        bases = subspace_bases(X, self.n_subdims)
-        # bases, (n_gds_dims, n_subdims)
-        bases = self._gds_projection(bases)
+        bases = subspace_bases(X, self.test_n_subdims)
 
-        # gramians, (n_classes, n_subdims, n_subdims)
-        gramians = np.dot(self.dic.transpose(0, 2, 1), bases)
+        # grammians, (n_classes, n_subdims, n_subdims or greater)
+        dic = self.dic[:, :, :self.n_subdims]
+        #それぞれの辞書部分空間と入力部分空間との行列を求めている->特異値問題へ
+        #ある辞書部分空間:A,入力部分空間:Bとすると行列=A^T@B
+        #固有ベクトルを求めるために固有値分解を行えるようにするA^T@B@B^T@A
+        gramians = np.dot(dic.transpose(0, 2, 1), bases)
+        eigh_gramians = gramians@bases.T@dic
 
-        return gramians
-
+        return gramians,eigh_gramians
 #クラス数
 sub_num = 34
 y = []
@@ -100,10 +102,6 @@ for sbi, sb in enumerate(sblist):  # index object
             pxdata[key].append(tmp)
             pydata[key].append(sbi)  # label
 
-del sblist
-gc.collect()
-del piclist
-gc.collect()
 # %%
 glabel = copy.deepcopy(gydata)
 plabel = copy.deepcopy(pydata)
@@ -128,36 +126,33 @@ for km in pxdata.keys():  # ["2km","3km",....]
   pydata[km] = to_categorical(pydata[km])
 
 
-def cmsm_predict(gallery,probe):
-
-    # galleryの特徴量に関して、それぞれの被験者ごとに配列に分ける
-    gallery_list = []
-    num = 0
-    gallery = str(gallery)+'km'
-    probe = str(probe)+'km'
-    df_array = gxdata[gallery]
-    add = int(df_array.shape[0]/sub_num)
-    for i in range(sub_num):
-        array = df_array[num:num+add]
-        gallery_list.append(array)
-        num += add
-    gallery_array = np.array(gallery_list)
-
-    probe_list = []
-    num = 0
-    df_array = pxdata[probe]
-    add = int(df_array.shape[0]/sub_num)
-    for i in range(sub_num):
-        array = df_array[num:num+add]
-        probe_list.append(array)
-        num += add
-    probe_array = np.array(probe_list)
-
-    model = ConstrainedMSM(n_subdims=10, n_gds_dims=240)
-    model.fit(gallery_array, y)
-    model.n_subdims = 15
-    pred = model.predict(probe_array)
-    print(f"pred: {pred}\n true: {y}\n")
-    accuracy = (pred == y).mean()
-    print(f"accuracy:{accuracy}")
-    return accuracy
+gallery = 2
+probe = 2
+# galleryの特徴量に関して、それぞれの被験者ごとに配列に分ける
+gallery_list = []
+num = 0
+gallery = str(gallery)+'km'
+probe = str(probe)+'km'
+df_array = gxdata[gallery]
+add = int(df_array.shape[0]/sub_num)
+for i in range(sub_num):
+    array = df_array[num:num+add]
+    gallery_list.append(array)
+    num += add
+gallery_array = np.array(gallery_list)
+probe_list = []
+num = 0
+df_array = pxdata[probe]
+add = int(df_array.shape[0]/sub_num)
+for i in range(sub_num):
+    array = df_array[num:num+add]
+    probe_list.append(array)
+    num += add
+probe_array = np.array(probe_list)
+model = MutualSubspaceMethod(n_subdims=20)
+model.fit(gallery_array, y)
+model.n_subdims = 10
+pred = model.predict(probe_array)
+print(f"pred: {pred}\n true: {y}\n")
+accuracy = (pred == y).mean()
+print(f"accuracy:{accuracy}")
