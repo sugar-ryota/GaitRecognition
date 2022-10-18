@@ -8,10 +8,7 @@ import numpy as np
 import pandas as pd
 
 from base.base_class import MSMInterface, SMBase
-from base.base import subspace_bases
-from sklearn.metrics import roc_curve
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import label_binarize
+from base.base import subspace_bases,specific_subspace_bases
 
 
 # %%
@@ -37,13 +34,20 @@ class MutualSubspaceMethod(MSMInterface, SMBase):
         G: array, (n_class, n_subdims, n_subdims)
             gramian matricies of references of each class
         """
+
         # bases, (n_dims, n_subdims)
-        bases = subspace_bases(X, self.test_n_subdims)
+        # bases = subspace_bases(X, self.test_n_subdims)
+        bases = specific_subspace_bases(X)
 
         # grammians, (n_classes, n_subdims, n_subdims or greater)
         dic = self.dic[:, :, :self.n_subdims]
         gramians = np.dot(dic.transpose(0, 2, 1), bases)
-
+        # bases_array = np.array(bases)
+        # dic_array = np.array(dic)
+        # gramians_array = np.array(gramians)
+        # print(f'bases_shape = {bases_array.shape}')
+        # print(f'dic_shape = {dic_array.shape}')
+        # print(f'gramians_shape = {gramians_array.shape}')
         return gramians
 
 
@@ -57,8 +61,8 @@ for i in range(sub_num):
 
 
 # %%
-test = 2
 train = 2
+test = 3
 
 #galleryの特徴量に関して、それぞれの被験者ごとに配列に分ける
 gallery_list = []
@@ -73,7 +77,6 @@ for i in range(sub_num):
     num += add
 gallery_array = np.array(gallery_list)
 gallery_trans = gallery_array.transpose(0, 2, 1)
-# print(f'gallery_trans_shape = {gallery_trans.shape}')
 
 
 # %%
@@ -100,18 +103,6 @@ for p_num in range(1, 4):  # probeデータは3つに分けているから一つ
     model.fit(gallery_trans, y)
     model.n_subdims = 10
     pred = model.predict(probe_trans)
-    # y_one_hot = label_binarize(y, classes=y)
-    # # print(y_one_hot)
-    # for i in range(len(proba)):
-    #     fpr, tpr, thresholds = roc_curve(y_one_hot[:,i], proba[:,i])
-    #     plt.plot(fpr, tpr, marker='o',label=f'class: {i}')
-    #     plt.xlabel('FPR: False positive rate')
-    #     plt.ylabel('TPR: True positive rate')
-    #     plt.grid()
-    #     # plt.savefig(f'plot/msm/sklearn_roc_curve_{i}.png')
-    # plt.legend()
-    # plt.savefig(f'plot/msm/sklearn_roc_curve_{test}_{train}.png')
-
     print(f"pred: {pred}\n true: {y}\n")
     accuracy = (pred == y).mean()
     sum_acc += accuracy

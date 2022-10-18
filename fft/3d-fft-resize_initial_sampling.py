@@ -9,46 +9,16 @@ from PIL import Image
 from keras.utils.np_utils import to_categorical
 from collections import OrderedDict
 from natsort import natsorted
-from base.base_class_cca import MSMInterface, SMBase
-from base.base_cca import subspace_bases
+from numpy.fft import fftn
 
+#それぞれの速度のデータ数(gallery,probe同じ)
+speed_num = {"2km": 420, "3km": 360, "4km": 360, "5km": 420,
+               "6km": 360, "7km": 240, "8km": 240, "9km": 240, "10km": 300}
+#取得するデータの数
+sampling_num = 210
 
-"""
-Mutual Subspace Method
-"""
-
-
-class MutualSubspaceMethod(MSMInterface, SMBase):
-    """
-    Mutual Subspace Method
-    """
-
-    def _get_gramians(self, X):
-        """
-        Parameters
-        ----------
-        X: array, (n_dims, n_samples)
-        Returns
-        -------
-        G: array, (n_class, n_subdims, n_subdims)
-            gramian matricies of references of each class
-        """
-
-        # bases, (n_dims, n_subdims)
-        # bases = subspace_bases(X, self.test_n_subdims)
-        # bases = np.array(bases)
-        # print(f'bases = {bases.shape}')
-
-        # grammians, (n_classes, n_subdims, n_subdims or greater)
-        dic = self.dic[0, :, :self.n_subdims]
-        # それぞれの辞書部分空間と入力部分空間との行列を求めている->特異値問題へ
-        # ある辞書部分空間:A,入力部分空間:Bとすると行列=A^T@B
-        # 固有ベクトルを求めるために固有値分解を行えるようにするA^T@B@B^T@A
-        gramians = np.dot(dic.T, X)
-        eigh_gramians = gramians@X.T@dic
-
-        return gramians, eigh_gramians
-
+def cos_sim(v1, v2):
+    return np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
 
 # クラス数
 sub_num = 34
@@ -86,29 +56,40 @@ for sbi, sb in enumerate(sblist):  # index object
     # gallery読み込み
     for kmi, km in enumerate(galist, 2):  # 2kmからだからindexの開始数値は2
         key = str(kmi)+'km'
+        count = 0
         # ["00000001.png","00000002.png"....]
         piclist = natsorted(glob.glob(km+"/*.png"))
         for pic in piclist:
-            tmp = np.array(Image.open(pic)).reshape(-1)
-            tmp = tmp/255  # 画像を正規化
-            gxdata[key].append(tmp)
-            gydata[key].append(sbi)  # label
+            if count >= sampling_num:
+              break
+            else:
+              tmp = np.array(Image.open(pic).resize((32,22)))
+              tmp = tmp.reshape(32,22)
+              tmp = tmp/255  # 画像を正規化
+              gxdata[key].append(tmp)
+              gydata[key].append(sbi)  # label
+              count += 1
 
     # probe読み込み
     # 3つにわける
     for kmi, km in enumerate(prlist, 2):
         key = str(kmi)+'km'
+        count = 0
         piclist = natsorted(glob.glob(km+"/*.png"))
         for pic in piclist:
-            tmp = np.array(Image.open(pic)).reshape(-1)
-            tmp = tmp/255
-            pxdata[key].append(tmp)
-            pydata[key].append(sbi)  # label
+            if count >= sampling_num:
+              break
+            else:
+              tmp = np.array(Image.open(pic).resize((32,22)))
+              tmp = tmp.reshape(32,22)
+              tmp = tmp/255  # 画像を正規化
+              pxdata[key].append(tmp)
+              pydata[key].append(sbi)  # label
+              count += 1
 
 # %%
 glabel = copy.deepcopy(gydata)
 plabel = copy.deepcopy(pydata)
-
 
 # %%
 
@@ -129,21 +110,31 @@ for km in pxdata.keys():  # ["2km","3km",....]
     pydata[km] = to_categorical(pydata[km])
 
 
-gallery = 2
-probe = 3
+gallery = 5
+probe = 5
 # galleryの特徴量に関して、それぞれの被験者ごとに配列に分ける
 gallery_list = []
 num = 0
 gallery = str(gallery)+'km'
 probe = str(probe)+'km'
 df_array = gxdata[gallery]
+print(f'df_array_shape = {df_array.shape}') #(14280,128,88)
 add = int(df_array.shape[0]/sub_num)
 for i in range(sub_num):
     array = df_array[num:num+add]
     gallery_list.append(array)
     num += add
 gallery_array = np.array(gallery_list)
-print(f'gallery_array_shape = {gallery_array.shape}')
+print(f'gallery_array_shape = {gallery_array.shape}') #(34,420,128,88)
+# ここにfftの処理を書く
+gallery_fft = []
+for subject in gallery_array:
+    fft_subject = abs(fftn(subject))
+    # print(f'fft_subject_shape = {fft_subject.shape}') #(420,128,88)
+    fft_subject = fft_subject.flatten()
+    gallery_fft.append(fft_subject)
+gallery_fft = np.array(gallery_fft)
+print(f'gallery_fft.shape = {gallery_fft.shape}')
 probe_list = []
 num = 0
 df_array = pxdata[probe]
@@ -153,10 +144,27 @@ for i in range(sub_num):
     probe_list.append(array)
     num += add
 probe_array = np.array(probe_list)
-model = MutualSubspaceMethod(n_subdims=420)
-model.fit(gallery_array, y)
-model.n_subdims = 420
-pred = model.predict(probe_array)
+probe_fft = []
+for subject in probe_array:
+    fft_subject = abs(fftn(subject))
+    fft_subject = fft_subject.flatten()
+    probe_fft.append(fft_subject)
+probe_fft = np.array(probe_fft)
+
+pred = []
+for i in range(len(probe_fft)):
+  result = []
+  for j in range(len(gallery_fft)):
+    #cos類似度を求める
+    sim = cos_sim(probe_fft[i],gallery_fft[j])
+    result.append(sim)
+  pred.append(np.argmax(result))
+
 print(f"pred: {pred}\n true: {y}\n")
-accuracy = (pred == y).mean()
+# accuracy = (pred == y).mean()
+true_count = 0
+for i in range(len(pred)):
+    if pred[i] == y[i]:
+        true_count += 1
+accuracy = true_count / sub_num
 print(f"accuracy:{accuracy}")

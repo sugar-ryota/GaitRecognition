@@ -1,5 +1,7 @@
-#!/usr/bin/env python
-# coding: utf-8
+#420枚を2分割してみてその相関を調べてみる
+#具体的には、2分割したのちに3d-fftをかける→キューブ状からシフトして低周波を真ん中に集める→10*10*10を取り出す一本のベクトルを生成する
+#その2つの相関を調べてみる
+
 
 # %%
 import numpy as np
@@ -9,45 +11,10 @@ from PIL import Image
 from keras.utils.np_utils import to_categorical
 from collections import OrderedDict
 from natsort import natsorted
-from base.base_class_cca import MSMInterface, SMBase
-from base.base_cca import subspace_bases
-
-
-"""
-Mutual Subspace Method
-"""
-
-
-class MutualSubspaceMethod(MSMInterface, SMBase):
-    """
-    Mutual Subspace Method
-    """
-
-    def _get_gramians(self, X):
-        """
-        Parameters
-        ----------
-        X: array, (n_dims, n_samples)
-        Returns
-        -------
-        G: array, (n_class, n_subdims, n_subdims)
-            gramian matricies of references of each class
-        """
-
-        # bases, (n_dims, n_subdims)
-        # bases = subspace_bases(X, self.test_n_subdims)
-        # bases = np.array(bases)
-        # print(f'bases = {bases.shape}')
-
-        # grammians, (n_classes, n_subdims, n_subdims or greater)
-        dic = self.dic[0, :, :self.n_subdims]
-        # それぞれの辞書部分空間と入力部分空間との行列を求めている->特異値問題へ
-        # ある辞書部分空間:A,入力部分空間:Bとすると行列=A^T@B
-        # 固有ベクトルを求めるために固有値分解を行えるようにするA^T@B@B^T@A
-        gramians = np.dot(dic.T, X)
-        eigh_gramians = gramians@X.T@dic
-
-        return gramians, eigh_gramians
+from numpy.fft import fftn,fftshift
+import random
+from base.base_class import MSMInterface,SMBase
+from base.base import subspace_bases
 
 
 # クラス数
@@ -89,7 +56,7 @@ for sbi, sb in enumerate(sblist):  # index object
         # ["00000001.png","00000002.png"....]
         piclist = natsorted(glob.glob(km+"/*.png"))
         for pic in piclist:
-            tmp = np.array(Image.open(pic)).reshape(-1)
+            tmp = np.array(Image.open(pic)).reshape(128,88)
             tmp = tmp/255  # 画像を正規化
             gxdata[key].append(tmp)
             gydata[key].append(sbi)  # label
@@ -100,7 +67,7 @@ for sbi, sb in enumerate(sblist):  # index object
         key = str(kmi)+'km'
         piclist = natsorted(glob.glob(km+"/*.png"))
         for pic in piclist:
-            tmp = np.array(Image.open(pic)).reshape(-1)
+            tmp = np.array(Image.open(pic)).reshape(128,88)
             tmp = tmp/255
             pxdata[key].append(tmp)
             pydata[key].append(sbi)  # label
@@ -108,7 +75,6 @@ for sbi, sb in enumerate(sblist):  # index object
 # %%
 glabel = copy.deepcopy(gydata)
 plabel = copy.deepcopy(pydata)
-
 
 # %%
 
@@ -130,33 +96,50 @@ for km in pxdata.keys():  # ["2km","3km",....]
 
 
 gallery = 2
-probe = 3
+probe = 2
 # galleryの特徴量に関して、それぞれの被験者ごとに配列に分ける
 gallery_list = []
 num = 0
 gallery = str(gallery)+'km'
 probe = str(probe)+'km'
 df_array = gxdata[gallery]
+# print(f'df_array_shape = {df_array.shape}') (14280,128,88)
 add = int(df_array.shape[0]/sub_num)
 for i in range(sub_num):
     array = df_array[num:num+add]
     gallery_list.append(array)
     num += add
 gallery_array = np.array(gallery_list)
-print(f'gallery_array_shape = {gallery_array.shape}')
-probe_list = []
-num = 0
-df_array = pxdata[probe]
-add = int(df_array.shape[0]/sub_num)
-for i in range(sub_num):
-    array = df_array[num:num+add]
-    probe_list.append(array)
-    num += add
-probe_array = np.array(probe_list)
-model = MutualSubspaceMethod(n_subdims=420)
-model.fit(gallery_array, y)
-model.n_subdims = 420
-pred = model.predict(probe_array)
-print(f"pred: {pred}\n true: {y}\n")
-accuracy = (pred == y).mean()
-print(f"accuracy:{accuracy}")
+# print(f'gallery_array_shape = {gallery_array.shape}')(34,420,128,88)
+# ここにfftの処理を書く
+
+first = gallery_array[0][0:210]
+second = gallery_array[0][210:420]
+
+first = np.array(first)
+second = np.array(second)
+# print(first.shape)
+# print(second.shape)
+
+f_fft = abs(fftshift(fftn(first)))
+s_fft = abs(fftshift(fftn(second)))
+
+print(f_fft.shape)
+print(s_fft.shape)
+
+#lowpassの記述
+f_lowpass = f_fft[100:110,:,:]
+f_lowpass = f_lowpass[:,59:69,:]
+f_lowpass = f_lowpass[:,:,39:49]
+s_lowpass = s_fft[100:110,:,:]
+s_lowpass = s_lowpass[:,59:69,:]
+s_lowpass = s_lowpass[:,:,39:49]
+print(f_lowpass.shape)
+print(s_lowpass.shape)
+
+f_flatten = f_lowpass.flatten()
+s_flatten = s_lowpass.flatten()
+
+cos = np.inner(f_flatten, s_flatten) / (np.linalg.norm(f_flatten) * np.linalg.norm(s_flatten))
+
+print(cos)

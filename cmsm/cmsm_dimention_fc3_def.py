@@ -10,21 +10,16 @@ import csv
 import pandas as pd
 import pickle
 
-from base.base_class import ConstrainedSMBase, MSMInterface, SMBase
+from base.base_class import ConstrainedSMBase, MSMInterface
 from base.base import subspace_bases, mean_square_singular_values
 
 
 # %%
 
 
-"""
-Mutual Subspace Method
-"""
-
-
-class MutualSubspaceMethod(MSMInterface, SMBase):
+class ConstrainedMSM(MSMInterface, ConstrainedSMBase):
     """
-    Mutual Subspace Method
+    Constrained Mutual Subspace Method
     """
 
     def _get_gramians(self, X):
@@ -39,11 +34,12 @@ class MutualSubspaceMethod(MSMInterface, SMBase):
         """
 
         # bases, (n_dims, n_subdims)
-        bases = subspace_bases(X, self.test_n_subdims)
+        bases = subspace_bases(X, self.n_subdims)
+        # bases, (n_gds_dims, n_subdims)
+        bases = self._gds_projection(bases)
 
-        # grammians, (n_classes, n_subdims, n_subdims or greater)
-        dic = self.dic[:, :, :self.n_subdims]
-        gramians = np.dot(dic.transpose(0, 2, 1), bases)
+        # gramians, (n_classes, n_subdims, n_subdims)
+        gramians = np.dot(self.dic.transpose(0, 2, 1), bases)
 
         return gramians
 
@@ -61,20 +57,20 @@ def predict(gallery, probe):
     gallery_list = []
     num = 0
     df = pd.read_csv(
-        f"./cnnfeature/silhouette/cnnmodel/{gallery}km/tr.csv", header=None)
+        f"./cnnfeature/silhouette/cnnmodel/{gallery}km/tr_fc3.csv", header=None)
     df_array = np.array(df)
     print(df_array.shape)
     add = int(df_array.shape[1]/sub_num)
     print(add)
     for i in range(sub_num):
-        df = pd.read_csv(f"./cnnfeature/silhouette/cnnmodel/{gallery}km/tr.csv",
+        df = pd.read_csv(f"./cnnfeature/silhouette/cnnmodel/{gallery}km/tr_fc3.csv",
                          header=None, usecols=[x for x in range(num, num+add)])
         gallery_list.append(df)
         num += add
     gallery_array = np.array(gallery_list)
     gallery_trans = gallery_array.transpose(0, 2, 1)
 
-    save_path = "./accuracy/accuracy_msm.txt"
+    save_path = "./accuracy/accuracy_cmsm_fc3.txt"
 
     with open(save_path, mode='a') as file:
         file.write("\n")
@@ -89,19 +85,19 @@ def predict(gallery, probe):
         probe_list = []
         num = 0
         df = pd.read_csv(
-            f"./cnnfeature/silhouette/cnnmodel/{gallery}km/ts{probe}km_{p_num}.csv", header=None)
+            f"./cnnfeature/silhouette/cnnmodel/{gallery}km/ts_fc3{probe}km_{p_num}.csv", header=None)
         df_array = np.array(df)
         print(df_array.shape)
         add = int(df_array.shape[1]/sub_num)
         print(add)
         for i in range(sub_num):
             df = pd.read_csv(
-                f"./cnnfeature/silhouette/cnnmodel/{gallery}km/ts{probe}km_{p_num}.csv", header=None, usecols=[x for x in range(num, num+add)])
+                f"./cnnfeature/silhouette/cnnmodel/{gallery}km/ts_fc3{probe}km_{p_num}.csv", header=None, usecols=[x for x in range(num, num+add)])
             probe_list.append(df)
             num += add
         probe_array = np.array(probe_list)
         probe_trans = probe_array.transpose(0, 2, 1)
-        model = MutualSubspaceMethod(n_subdims=10)
+        model = ConstrainedMSM(n_subdims=10, n_gds_dims=240)
         model.fit(gallery_trans, y)
         model.n_subdims = 15
         pred = model.predict(probe_trans)

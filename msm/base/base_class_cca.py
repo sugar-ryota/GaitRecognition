@@ -2,6 +2,7 @@
 # coding: utf-8
 
 
+from distutils.errors import DistutilsExecError
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.preprocessing import normalize as _normalize, LabelEncoder
 import numpy as np
@@ -102,9 +103,12 @@ class SMBase(BaseEstimator, ClassifierMixin):
         y: array, (n_classes)
         """
         # 辞書部分空間の生成
-        dic = [subspace_bases(_X, self.n_subdims) for _X in X]
+        # X = np.array(X)
+        # print(f'X_shape = {X.shape}')
+        # dic = [subspace_bases(_X, self.n_subdims) for _X in X]
         # dic,  (n_classes, n_dims, n_subdims)
-        dic = np.array(dic)
+        dic = np.array(X)
+        # print(f'dic_shape = {dic.shape}')
         self.dic = dic
 
     def predict(self, X):
@@ -185,25 +189,40 @@ class MSMInterface(object):
         """
         print("predict_proba")
         # preprocessing data matricies
+        # X:テストデータ
         X = self._prepare_X(X)
-
+        X = np.array(X)
         pred = []
+        count = 0
         for _X in X:
             # gramians, (n_classes, n_subdims, n_subdims)
-            gramians,eigh_gramians = self._get_gramians(_X)
-            print(f'gramians_shape = {gramians.shape}')
-            print(f'eigh_gramians_shape = {eigh_gramians.shape}')
+            gramians, eigh_gramians = self._get_gramians(_X)
+            # print(f'gramians_shape = {gramians.shape}')
+            # print(f'eigh_gramians_shape = {eigh_gramians.shape}')
 
             # i_th singular value of grammian of subspace bases is
             # square root of cosine of i_th cannonical angles
             # average of square of them is cannonical angle between subspaces
             # それぞれの類似度を計算する
-            c = [mean_square_singular_values(g) for g in gramians]
-            eighs = [np.linalg.eig(g)[0] for g in eigh_gramians]
-            eigh_vectors = [np.linalg.eig(g)[1] for g in eigh_gramians]
-            print(f'eighs = {eighs}')
-            print(f'eigh_vectors = {eigh_vectors}')
-            pred.append(c)
+            # c = [mean_square_singular_values(g) for g in gramians]
+            # eighs = [np.linalg.eig(g)[0] for g in eigh_gramians]
+            eighs = np.linalg.eig(eigh_gramians)[0]
+            # eigh_vectors = [np.linalg.eig(g)[1] for g in eigh_gramians]
+            eigh_vectors = np.linalg.eig(eigh_gramians)[1]
+            eighs = np.array(eighs)
+            eigh_vectors = np.array(eigh_vectors)
+            save_path = "./eigh_2_3.txt"
+            with open(save_path, mode='a') as file:
+                file.write(f"eighs:{eighs}")
+                file.write(f"eigh_vectors:{eigh_vectors}")
+                file.write("\n")
+            if count == 0:
+                print(f'eigh_shape = {eighs.shape}')
+                print(f'eigh_vector_shape = {eigh_vectors.shape}')
+                print(f'eighs = {eighs}')
+                print(f'eigh_vectors = {eigh_vectors}')
+            # pred.append(c)
+            count += 1
         return np.array(pred)
 
     def _get_gramians(self, X):
@@ -298,4 +317,3 @@ class ConstrainedSMBase(SMBase):
 
         dic = self._gds_projection(dic)
         self.dic = dic
-

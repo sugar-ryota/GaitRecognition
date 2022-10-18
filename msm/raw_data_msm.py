@@ -2,15 +2,17 @@
 # coding: utf-8
 
 # %%
+import os
 import numpy as np
 import copy
 import glob
 from PIL import Image
 from keras.utils.np_utils import to_categorical
+import gc
 from collections import OrderedDict
 from natsort import natsorted
-from base.base_class_cca import MSMInterface, SMBase
-from base.base_cca import subspace_bases
+from base.base_class import MSMInterface,SMBase
+from base.base import subspace_bases
 
 
 """
@@ -35,29 +37,22 @@ class MutualSubspaceMethod(MSMInterface, SMBase):
         """
 
         # bases, (n_dims, n_subdims)
-        # bases = subspace_bases(X, self.test_n_subdims)
-        # bases = np.array(bases)
-        # print(f'bases = {bases.shape}')
+        bases = subspace_bases(X, self.test_n_subdims)
 
         # grammians, (n_classes, n_subdims, n_subdims or greater)
-        dic = self.dic[0, :, :self.n_subdims]
-        # それぞれの辞書部分空間と入力部分空間との行列を求めている->特異値問題へ
-        # ある辞書部分空間:A,入力部分空間:Bとすると行列=A^T@B
-        # 固有ベクトルを求めるために固有値分解を行えるようにするA^T@B@B^T@A
-        gramians = np.dot(dic.T, X)
-        eigh_gramians = gramians@X.T@dic
+        dic = self.dic[:, :, :self.n_subdims]
+        gramians = np.dot(dic.transpose(0, 2, 1), bases)
 
-        return gramians, eigh_gramians
+        return gramians
 
-
-# クラス数
+#クラス数
 sub_num = 34
 y = []
 for i in range(sub_num):
     y.append(i)
 
 
-# 順番が保持された辞書
+#順番が保持された辞書
 dict = OrderedDict({
     '2km': [],
     '3km': [],
@@ -70,7 +65,7 @@ dict = OrderedDict({
     '10km': [],
 })
 
-# dictを異なるIDでコピーする(dictが変更されても影響は受けない)
+#dictを異なるIDでコピーする(dictが変更されても影響は受けない)
 gxdata = copy.deepcopy(dict)
 gydata = copy.deepcopy(dict)
 pxdata = copy.deepcopy(dict)
@@ -83,7 +78,7 @@ for sbi, sb in enumerate(sblist):  # index object
     galist = natsorted(glob.glob(sb+"/gallery*"))
     prlist = natsorted(glob.glob(sb+"/probe*"))
 
-    # gallery読み込み
+    #gallery読み込み
     for kmi, km in enumerate(galist, 2):  # 2kmからだからindexの開始数値は2
         key = str(kmi)+'km'
         # ["00000001.png","00000002.png"....]
@@ -94,8 +89,8 @@ for sbi, sb in enumerate(sblist):  # index object
             gxdata[key].append(tmp)
             gydata[key].append(sbi)  # label
 
-    # probe読み込み
-    # 3つにわける
+    #probe読み込み
+    #3つにわける
     for kmi, km in enumerate(prlist, 2):
         key = str(kmi)+'km'
         piclist = natsorted(glob.glob(km+"/*.png"))
@@ -105,6 +100,10 @@ for sbi, sb in enumerate(sblist):  # index object
             pxdata[key].append(tmp)
             pydata[key].append(sbi)  # label
 
+del sblist
+gc.collect()
+del piclist
+gc.collect()
 # %%
 glabel = copy.deepcopy(gydata)
 plabel = copy.deepcopy(pydata)
@@ -123,14 +122,15 @@ for km in gxdata.keys():  # ["2km","3km",....]
 
 
 for km in pxdata.keys():  # ["2km","3km",....]
-    pxdata[km] = np.array(pxdata[km])
-    pxdata[km].astype('float32')
-    pydata[km] = np.array(pydata[km])
-    pydata[km] = to_categorical(pydata[km])
+  pxdata[km] = np.array(pxdata[km])
+  pxdata[km].astype('float32')
+  pydata[km] = np.array(pydata[km])
+  pydata[km] = to_categorical(pydata[km])
 
 
-gallery = 2
+gallery =3
 probe = 3
+
 # galleryの特徴量に関して、それぞれの被験者ごとに配列に分ける
 gallery_list = []
 num = 0
@@ -153,9 +153,9 @@ for i in range(sub_num):
     probe_list.append(array)
     num += add
 probe_array = np.array(probe_list)
-model = MutualSubspaceMethod(n_subdims=420)
+model = MutualSubspaceMethod(n_subdims=20)
 model.fit(gallery_array, y)
-model.n_subdims = 420
+model.n_subdims = 10
 pred = model.predict(probe_array)
 print(f"pred: {pred}\n true: {y}\n")
 accuracy = (pred == y).mean()

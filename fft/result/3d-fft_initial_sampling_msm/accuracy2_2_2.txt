@@ -1,0 +1,432 @@
+
+sampling_num = 10, start = 5, end = 15, dic_dim = 75, in_dim = 75
+
+accuracy:0.7352941176470589
+
+sampling_num = 10, start = 5, end = 15, dic_dim = 75, in_dim = 100
+
+accuracy:0.7352941176470589
+
+sampling_num = 10, start = 5, end = 15, dic_dim = 75, in_dim = 125
+
+accuracy:0.7352941176470589
+
+sampling_num = 10, start = 5, end = 15, dic_dim = 100, in_dim = 75
+
+accuracy:0.7352941176470589
+
+sampling_num = 10, start = 5, end = 15, dic_dim = 100, in_dim = 100
+
+accuracy:0.7647058823529411
+
+sampling_num = 10, start = 5, end = 15, dic_dim = 100, in_dim = 125
+
+accuracy:0.7647058823529411
+
+sampling_num = 10, start = 5, end = 15, dic_dim = 125, in_dim = 75
+
+accuracy:0.7352941176470589
+
+sampling_num = 10, start = 5, end = 15, dic_dim = 125, in_dim = 100
+
+accuracy:0.7647058823529411
+
+sampling_num = 10, start = 5, end = 15, dic_dim = 125, in_dim = 125
+
+accuracy:0.7647058823529411
+
+sampling_num = 10, start = 5, end = 20, dic_dim = 75, in_dim = 75
+
+accuracy:0.7647058823529411
+
+sampling_num = 10, start = 5, end = 20, dic_dim = 75, in_dim = 100
+
+accuracy:0.8235294117647058
+
+sampling_num = 10, start = 5, end = 20, dic_dim = 75, in_dim = 125
+
+accuracy:0.8529411764705882
+
+sampling_num = 10, start = 5, end = 20, dic_dim = 100, in_dim = 75
+
+accuracy:0.7647058823529411
+
+sampling_num = 10, start = 5, end = 20, dic_dim = 100, in_dim = 100
+
+accuracy:0.8823529411764706
+
+sampling_num = 10, start = 5, end = 20, dic_dim = 100, in_dim = 125
+
+accuracy:0.8823529411764706
+
+sampling_num = 10, start = 5, end = 20, dic_dim = 125, in_dim = 75
+
+accuracy:0.7647058823529411
+
+sampling_num = 10, start = 5, end = 20, dic_dim = 125, in_dim = 100
+
+accuracy:0.8823529411764706
+
+sampling_num = 10, start = 5, end = 20, dic_dim = 125, in_dim = 125
+
+accuracy:0.8823529411764706
+
+sampling_num = 10, start = 10, end = 15, dic_dim = 75, in_dim = 75
+
+accuracy:0.8235294117647058
+
+sampling_num = 10, start = 10, end = 15, dic_dim = 75, in_dim = 100
+
+accuracy:0.8235294117647058
+
+sampling_num = 10, start = 10, end = 15, dic_dim = 75, in_dim = 125
+
+accuracy:0.8235294117647058
+
+sampling_num = 10, start = 10, end = 15, dic_dim = 100, in_dim = 75
+
+accuracy:0.8235294117647058
+
+sampling_num = 10, start = 10, end = 15, dic_dim = 100, in_dim = 100
+
+accuracy:0.8235294117647058
+
+sampling_num = 10, start = 10, end = 15, dic_dim = 100, in_dim = 125
+
+accuracy:0.8235294117647058
+
+sampling_num = 10, start = 10, end = 15, dic_dim = 125, in_dim = 75
+
+accuracy:0.8235294117647058
+
+sampling_num = 10, start = 10, end = 15, dic_dim = 125, in_dim = 100
+
+accuracy:0.8235294117647058
+
+sampling_num = 10, start = 10, end = 15, dic_dim = 125, in_dim = 125
+
+accuracy:0.8235294117647058
+
+sampling_num = 10, start = 10, end = 20, dic_dim = 75, in_dim = 75
+
+accuracy:0.9117647058823529
+
+sampling_num = 10, start = 10, end = 20, dic_dim = 75, in_dim = 100
+
+accuracy:0.8823529411764706
+
+sampling_num = 10, start = 10, end = 20, dic_dim = 75, in_dim = 125
+
+accuracy:0.8823529411764706
+
+sampling_num = 10, start = 10, end = 20, dic_dim = 100, in_dim = 75
+
+accuracy:0.9117647058823529
+
+sampling_num = 10, start = 10, end = 20, dic_dim = 100, in_dim = 100
+
+accuracy:0.8823529411764706
+
+sampling_num = 10, start = 10, end = 20, dic_dim = 100, in_dim = 125
+
+accuracy:0.9117647058823529
+
+sampling_num = 10, start = 10, end = 20, dic_dim = 125, in_dim = 75
+
+accuracy:0.9117647058823529
+
+sampling_num = 10, start = 10, end = 20, dic_dim = 125, in_dim = 100
+
+accuracy:0.8823529411764706
+
+sampling_num = 10, start = 10, end = 20, dic_dim = 125, in_dim = 125
+
+accuracy:0.9411764705882353
+
+sampling_num = 15, start = 5, end = 15, dic_dim = 75, in_dim = 75
+
+accuracy:0.7647058823529411
+
+sampling_num = 15, start = 5, end = 15, dic_dim = 75, in_dim = 100
+
+accuracy:0.7941176470588235
+
+sampling_num = 15, start = 5, end = 15, dic_dim = 75, in_dim = 125
+
+accuracy:0.7941176470588235
+
+sampling_num = 15, start = 5, end = 15, dic_dim = 100, in_dim = 75
+
+accuracy:0.7647058823529411
+
+sampling_num = 15, start = 5, end = 15, dic_dim = 100, in_dim = 100
+
+accuracy:0.7941176470588235
+
+sampling_num = 15, start = 5, end = 15, dic_dim = 100, in_dim = 125
+
+accuracy:0.7941176470588235
+
+sampling_num = 15, start = 5, end = 15, dic_dim = 125, in_dim = 75
+
+accuracy:0.7647058823529411
+
+sampling_num = 15, start = 5, end = 15, dic_dim = 125, in_dim = 100
+
+accuracy:0.7941176470588235
+
+sampling_num = 15, start = 5, end = 15, dic_dim = 125, in_dim = 125
+
+accuracy:0.8823529411764706
+
+sampling_num = 15, start = 5, end = 20, dic_dim = 75, in_dim = 75
+
+accuracy:0.8235294117647058
+
+sampling_num = 15, start = 5, end = 20, dic_dim = 75, in_dim = 100
+
+accuracy:0.8235294117647058
+
+sampling_num = 15, start = 5, end = 20, dic_dim = 75, in_dim = 125
+
+accuracy:0.7941176470588235
+
+sampling_num = 15, start = 5, end = 20, dic_dim = 100, in_dim = 75
+
+accuracy:0.8235294117647058
+
+sampling_num = 15, start = 5, end = 20, dic_dim = 100, in_dim = 100
+
+accuracy:0.8529411764705882
+
+sampling_num = 15, start = 5, end = 20, dic_dim = 100, in_dim = 125
+
+accuracy:0.8529411764705882
+
+sampling_num = 15, start = 5, end = 20, dic_dim = 125, in_dim = 75
+
+accuracy:0.8235294117647058
+
+sampling_num = 15, start = 5, end = 20, dic_dim = 125, in_dim = 100
+
+accuracy:0.8529411764705882
+
+sampling_num = 15, start = 5, end = 20, dic_dim = 125, in_dim = 125
+
+accuracy:0.8529411764705882
+
+sampling_num = 15, start = 10, end = 15, dic_dim = 75, in_dim = 75
+
+accuracy:0.8823529411764706
+
+sampling_num = 15, start = 10, end = 15, dic_dim = 75, in_dim = 100
+
+accuracy:0.9117647058823529
+
+sampling_num = 15, start = 10, end = 15, dic_dim = 75, in_dim = 125
+
+accuracy:0.9117647058823529
+
+sampling_num = 15, start = 10, end = 15, dic_dim = 100, in_dim = 75
+
+accuracy:0.8823529411764706
+
+sampling_num = 15, start = 10, end = 15, dic_dim = 100, in_dim = 100
+
+accuracy:0.9411764705882353
+
+sampling_num = 15, start = 10, end = 15, dic_dim = 100, in_dim = 125
+
+accuracy:0.9411764705882353
+
+sampling_num = 15, start = 10, end = 15, dic_dim = 125, in_dim = 75
+
+accuracy:0.8823529411764706
+
+sampling_num = 15, start = 10, end = 15, dic_dim = 125, in_dim = 100
+
+accuracy:0.9411764705882353
+
+sampling_num = 15, start = 10, end = 15, dic_dim = 125, in_dim = 125
+
+accuracy:0.9411764705882353
+
+sampling_num = 15, start = 10, end = 20, dic_dim = 75, in_dim = 75
+
+accuracy:0.9117647058823529
+
+sampling_num = 15, start = 10, end = 20, dic_dim = 75, in_dim = 100
+
+accuracy:0.9117647058823529
+
+sampling_num = 15, start = 10, end = 20, dic_dim = 75, in_dim = 125
+
+accuracy:0.9117647058823529
+
+sampling_num = 15, start = 10, end = 20, dic_dim = 100, in_dim = 75
+
+accuracy:0.9117647058823529
+
+sampling_num = 15, start = 10, end = 20, dic_dim = 100, in_dim = 100
+
+accuracy:0.9411764705882353
+
+sampling_num = 15, start = 10, end = 20, dic_dim = 100, in_dim = 125
+
+accuracy:0.9411764705882353
+
+sampling_num = 15, start = 10, end = 20, dic_dim = 125, in_dim = 75
+
+accuracy:0.9117647058823529
+
+sampling_num = 15, start = 10, end = 20, dic_dim = 125, in_dim = 100
+
+accuracy:0.9411764705882353
+
+sampling_num = 15, start = 10, end = 20, dic_dim = 125, in_dim = 125
+
+accuracy:0.9411764705882353
+
+sampling_num = 20, start = 5, end = 15, dic_dim = 75, in_dim = 75
+
+accuracy:0.7647058823529411
+
+sampling_num = 20, start = 5, end = 15, dic_dim = 75, in_dim = 100
+
+accuracy:0.7647058823529411
+
+sampling_num = 20, start = 5, end = 15, dic_dim = 75, in_dim = 125
+
+accuracy:0.7647058823529411
+
+sampling_num = 20, start = 5, end = 15, dic_dim = 100, in_dim = 75
+
+accuracy:0.7647058823529411
+
+sampling_num = 20, start = 5, end = 15, dic_dim = 100, in_dim = 100
+
+accuracy:0.7941176470588235
+
+sampling_num = 20, start = 5, end = 15, dic_dim = 100, in_dim = 125
+
+accuracy:0.7941176470588235
+
+sampling_num = 20, start = 5, end = 15, dic_dim = 125, in_dim = 75
+
+accuracy:0.7647058823529411
+
+sampling_num = 20, start = 5, end = 15, dic_dim = 125, in_dim = 100
+
+accuracy:0.7941176470588235
+
+sampling_num = 20, start = 5, end = 15, dic_dim = 125, in_dim = 125
+
+accuracy:0.7941176470588235
+
+sampling_num = 20, start = 5, end = 20, dic_dim = 75, in_dim = 75
+
+accuracy:0.7941176470588235
+
+sampling_num = 20, start = 5, end = 20, dic_dim = 75, in_dim = 100
+
+accuracy:0.8235294117647058
+
+sampling_num = 20, start = 5, end = 20, dic_dim = 75, in_dim = 125
+
+accuracy:0.8235294117647058
+
+sampling_num = 20, start = 5, end = 20, dic_dim = 100, in_dim = 75
+
+accuracy:0.7941176470588235
+
+sampling_num = 20, start = 5, end = 20, dic_dim = 100, in_dim = 100
+
+accuracy:0.8235294117647058
+
+sampling_num = 20, start = 5, end = 20, dic_dim = 100, in_dim = 125
+
+accuracy:0.7941176470588235
+
+sampling_num = 20, start = 5, end = 20, dic_dim = 125, in_dim = 75
+
+accuracy:0.7941176470588235
+
+sampling_num = 20, start = 5, end = 20, dic_dim = 125, in_dim = 100
+
+accuracy:0.8235294117647058
+
+sampling_num = 20, start = 5, end = 20, dic_dim = 125, in_dim = 125
+
+accuracy:0.8235294117647058
+
+sampling_num = 20, start = 10, end = 15, dic_dim = 75, in_dim = 75
+
+accuracy:0.8529411764705882
+
+sampling_num = 20, start = 10, end = 15, dic_dim = 75, in_dim = 100
+
+accuracy:0.8529411764705882
+
+sampling_num = 20, start = 10, end = 15, dic_dim = 75, in_dim = 125
+
+accuracy:0.7941176470588235
+
+sampling_num = 20, start = 10, end = 15, dic_dim = 100, in_dim = 75
+
+accuracy:0.8529411764705882
+
+sampling_num = 20, start = 10, end = 15, dic_dim = 100, in_dim = 100
+
+accuracy:0.8529411764705882
+
+sampling_num = 20, start = 10, end = 15, dic_dim = 100, in_dim = 125
+
+accuracy:0.8823529411764706
+
+sampling_num = 20, start = 10, end = 15, dic_dim = 125, in_dim = 75
+
+accuracy:0.8529411764705882
+
+sampling_num = 20, start = 10, end = 15, dic_dim = 125, in_dim = 100
+
+accuracy:0.8529411764705882
+
+sampling_num = 20, start = 10, end = 15, dic_dim = 125, in_dim = 125
+
+accuracy:0.8529411764705882
+
+sampling_num = 20, start = 10, end = 20, dic_dim = 75, in_dim = 75
+
+accuracy:0.8823529411764706
+
+sampling_num = 20, start = 10, end = 20, dic_dim = 75, in_dim = 100
+
+accuracy:0.8529411764705882
+
+sampling_num = 20, start = 10, end = 20, dic_dim = 75, in_dim = 125
+
+accuracy:0.8529411764705882
+
+sampling_num = 20, start = 10, end = 20, dic_dim = 100, in_dim = 75
+
+accuracy:0.8823529411764706
+
+sampling_num = 20, start = 10, end = 20, dic_dim = 100, in_dim = 100
+
+accuracy:0.9117647058823529
+
+sampling_num = 20, start = 10, end = 20, dic_dim = 100, in_dim = 125
+
+accuracy:0.8823529411764706
+
+sampling_num = 20, start = 10, end = 20, dic_dim = 125, in_dim = 75
+
+accuracy:0.8823529411764706
+
+sampling_num = 20, start = 10, end = 20, dic_dim = 125, in_dim = 100
+
+accuracy:0.9117647058823529
+
+sampling_num = 20, start = 10, end = 20, dic_dim = 125, in_dim = 125
+
+accuracy:0.9117647058823529

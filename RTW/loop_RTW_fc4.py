@@ -8,8 +8,8 @@ import random
 from base.base_class import ConstrainedSMBase, MSMInterface
 from base.base import subspace_bases, mean_square_singular_values
 
-from RTW.RTW_dimention_def import ConstrainedMSM
-from RTW.RTW_dimention_def import predict
+from RTW_dimention_fc4_def import ConstrainedMSM
+from RTW_dimention_fc4_def import predict
 
 # for i in range(2, 11):
 #   for j in range(2, 11):

@@ -23,8 +23,6 @@ from PIL import Image
 
 from keras.utils.np_utils import to_categorical
 
-
-
 from collections import OrderedDict
 
 from natsort import natsorted
@@ -215,6 +213,3 @@ result /= (n+1) #3つの平均を取るために3で割る
 wb = excel.Workbook()
 wb.save(f'./results/silhouette/softmax_fc3.csv')
 np.savetxt(f'./results/silhouette/softmax_fc3.csv',result,delimiter=',')
-
-
-

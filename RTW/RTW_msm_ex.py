@@ -54,8 +54,8 @@ for i in range(sub_num):
 TE_num = 100  # 変数R(TE特徴の数)
 sample_num = 5  # ランダムサンプリングする数
 
-train_km = 8
-test_km = 8
+train_km = 5
+test_km = 5
 # %%
 
 # galleryの特徴量に関して、それぞれの被験者ごとに配列に分ける

@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-
-from asyncio import proactor_events
-import itertools
 from sklearn.base import BaseEstimator, ClassifierMixin
-from sklearn.model_selection import KFold, StratifiedKFold
 from sklearn.preprocessing import normalize as _normalize, LabelEncoder
 import numpy as np
 from scipy.linalg import block_diag
 
-from base.base import subspace_bases,mean_square_singular_values
+from base.base import subspace_bases,mean_square_singular_values,specific_subspace_bases
 
 
 
@@ -79,6 +75,7 @@ class SMBase(BaseEstimator, ClassifierMixin):
         return y
 
     def fit(self, X, y):
+        # print("sm_fit")
         """
         Fit the model using the given data and parameters
         Parameters
@@ -99,19 +96,22 @@ class SMBase(BaseEstimator, ClassifierMixin):
         self._fit(X, y)
 
     def _fit(self, X, y):
+        # print("sm__fit")
         """
         Parameters
         ----------
         X: list of 2d-arrays, (n_classes, n_dims, n_samples)
         y: array, (n_classes)
         """
-
-        dic = [subspace_bases(_X, self.n_subdims) for _X in X]
+        #辞書部分空間を生成
+        # dic = [subspace_bases(_X, self.n_subdims) for _X in X]
+        dic = [specific_subspace_bases(_X) for _X in X]
         # dic,  (n_classes, n_dims, n_subdims)
         dic = np.array(dic)
         self.dic = dic
 
     def predict(self, X):
+        # print("predict")
         """
         Predict classes
         Parameters:
@@ -128,7 +128,6 @@ class SMBase(BaseEstimator, ClassifierMixin):
             proba = self.fast_predict_proba(X)
         else:
             proba = self.predict_proba(X)
-        # print(f'proba = {proba}')
 
         salt = 1e-3
         assert proba.min() > 0.0 - salt, 'some probabilities are smaller than 0! min value is {}'.format(proba.min())
@@ -174,6 +173,7 @@ class MSMInterface(object):
     """
 
     def predict_proba(self, X):
+        # print("msm_predict_proba")
         """
         Predict class probabilities
         Parameters:
@@ -294,8 +294,3 @@ class ConstrainedSMBase(SMBase):
 
         dic = self._gds_projection(dic)
         self.dic = dic
-
-
-
-
-

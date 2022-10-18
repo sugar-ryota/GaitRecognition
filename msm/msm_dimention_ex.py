@@ -58,7 +58,7 @@ for i in range(sub_num):
 
 # %%
 train_km = 2
-test_km = 2
+test_km = 3
 
 # galleryの特徴量に関して、それぞれの被験者ごとに配列に分ける
 gallery_list = []

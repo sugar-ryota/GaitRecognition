@@ -5,7 +5,6 @@ import csv
 import pandas as pd
 import pickle
 import random
-from sklearn.metrics import roc_auc_score
 
 from base.base_class import ConstrainedSMBase, MSMInterface
 from base.base import subspace_bases, mean_square_singular_values
@@ -83,6 +82,7 @@ for i in range(sub_num):
     TE_feature = np.array(TE_feature)
     ga_TE_feature.append(TE_feature.T)
 ga_TE_feature = np.array(ga_TE_feature)
+print(f'ga_te_feature_shape = {ga_TE_feature.shape}')
 ga_TE_feature_trans = ga_TE_feature.transpose(0, 2, 1)
 # %%
 # total_TE_feature = np.array(total_TE_feature)
@@ -127,10 +127,7 @@ for p_num in range(1, 4):
     pred = model.predict(pr_TE_feature_trans)
     print(f"pred: {pred}\n true: {y}\n")
     accuracy = (pred == y).mean()
-    error = 1 - accuracy
     print(f"accuracy:{accuracy}")
-    print(f"err: {error}")
-    print(f"auc_score: {roc_auc_score(y, pred,multi_class='ovr')}")
     sum_acc += accuracy
     acc = sum_acc/p_num
     print(f"total_accuracy:{acc}")

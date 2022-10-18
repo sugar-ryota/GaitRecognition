@@ -136,7 +136,7 @@ class SMBase(BaseEstimator, ClassifierMixin):
 
     def proba2class(self, proba):
         pred = self.labels[np.argmax(proba, axis=1)]
-        return self.le.inverse_transform(pred)
+        return self.le.inverse_transform(pred),proba
 
     def predict_proba(self, X):
         """
